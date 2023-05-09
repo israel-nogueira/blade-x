@@ -9,46 +9,55 @@
 
 ## Installation
 
-Install using composer:
+Faça a instalação via composer:
 
 ```bash
 composer require israel-nogueira/blade-x
 ```
 
-## Usage
+## Modo de uso
 
-Create a Blade instance by passing it the folder(s) where your view files are located, and a cache folder. Render a template by calling the `make` method. More information about the Blade templating engine can be found on https://laravel.com/docs/master/views.
-
-```php
-use Jenssegers\Blade\Blade;
-
-$blade = new Blade('views', 'cache');
-
-echo $blade->make('homepage', ['name' => 'John Doe'])->render();
-```
-
-Alternatively you can use the shorthand method `render`:
+Crie uma instância do Blade passando a(s) pasta(s) onde seus arquivos de exibição estão localizados e uma pasta de cache. 
+Renderize um modelo chamando o método `make`. 
+Mais informações sobre o mecanismo de modelagem Blade podem ser encontradas em https://laravel.com/docs/10.x/views.
 
 ```php
-echo $blade->render('homepage', ['name' => 'John Doe']);
+<?
+    include "/vendor/autoload.php";
+    use israelNogueira\bladex\BladeX;
+
+    $bladex = new BladeX('views', 'cache');
+    echo $bladex->make('homepage', ['name' => 'John Doe'])->render();
+
 ```
 
-You can also extend Blade using the `directive()` function:
+Alternativamente, você pode usar o método abreviado `render`:
 
 ```php
-$blade->directive('datetime', function ($expression) {
-    return "<?php echo with({$expression})->format('F d, Y g:i a'); ?>";
-});
-```
 
-Which allows you to use the following in your blade template:
+    echo $bladex->render('homepage', ['name' => 'John Doe']);
 
 ```
+
+Você também pode estender o Blade usando a função `directive()`:
+
+```php
+
+    $bladex->directive('datetime', function ($expression) {
+        return "<?php echo with({$expression})->format('F d, Y g:i a'); ?>";
+    });
+
+```
+
+O que permite que você use o seguinte em seu modelo de lâmina:
+
+```
+
 Current date: @datetime($date)
+
 ```
+As instâncias do BladeX passam todos os métodos para a *Factory* de exibição interna.
+Assim, métodos como `exists`, `file`, `share`, `composer` e `creator` também estão disponíveis.
 
-The Blade instances passes all methods to the internal view factory. So methods such as `exists`, `file`, `share`, `composer` and `creator` are available as well. Check out the [original documentation](https://laravel.com/docs/5.8/views) for more information.
+Confira a [documentação original](https://laravel.com/docs/10.x/views) para mais informações.
 
-## Integrations
-
-- [Phalcon Slayer Framework](https://github.com/phalconslayer/slayer) comes out of the box with Blade.
