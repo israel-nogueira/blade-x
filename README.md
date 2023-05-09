@@ -26,7 +26,10 @@ Mais informações sobre o mecanismo de modelagem Blade podem ser encontradas em
     include "/vendor/autoload.php";
     use israelNogueira\bladex\BladeX;
 
-    $bladex = new BladeX('views', 'cache');
+	$views = __DIR__ . '/views';
+	$cache = __DIR__ . '/cache';
+	$bladex = new BladeX($views, $cache);
+    
     echo $bladex->make('homepage', ['name' => 'John Doe'])->render();
 
 ```
