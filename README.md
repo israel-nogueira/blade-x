@@ -1,13 +1,17 @@
 <p align="center">
     <img src="https://raw.githubusercontent.com/israel-nogueira/blade-x/main/src/topo_README_v3.jpg"/>
 </p>
+
+<p align="center">
+    <a href="#instalação" target="_Self">Instalação</a> | <a href="#modo-de-uso" target="_Self">Modo de uso</a> 
+</p>
 <p align="center">
     <a href="https://packagist.org/packages/israel-nogueira/blade-x"><img src="https://poser.pugx.org/israel-nogueira/blade-x/v/stable.svg"></a>
     <a href="https://packagist.org/packages/israel-nogueira/blade-x"><img src="https://poser.pugx.org/israel-nogueira/blade-x/downloads"></a>
     <a href="https://packagist.org/packages/israel-nogueira/blade-x"><img src="https://poser.pugx.org/israel-nogueira/blade-x/license.svg"></a>
 </p>
 
-## Installation
+## Instalação
 
 Faça a instalação via composer:
 
