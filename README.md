@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/israel-nogueira/blade-x/main/src/topo_README_v2.jpg"/>
+    <img src="https://raw.githubusercontent.com/israel-nogueira/blade-x/main/src/topo_README_v3.jpg"/>
 </p>
 <p align="center">
     <a href="https://packagist.org/packages/israel-nogueira/blade-x"><img src="https://poser.pugx.org/israel-nogueira/blade-x/v/stable.svg"></a>
