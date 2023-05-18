@@ -31,16 +31,27 @@ class bladex implements FactoryContract
      */
     private $compiler;
 
-    public function __construct($viewPaths, string $cachePath, ContainerInterface $container = null)
+    public function __construct($viewPaths=null, string $cachePath=null, ContainerInterface $container = null)
     {
         $this->container = $container ?: new Container;
 
-        $this->setupContainer((array) $viewPaths, $cachePath);
+        $VIEWS = $viewPaths?? realpath(__DIR__.'/../../../..').'/views';
+        $CACHE = $cachePath?? realpath(__DIR__.'/../../../..').'/cache';
+
+        $this->setupContainer((array) $VIEWS, $CACHE);
         (new ViewServiceProvider($this->container))->register();
 
         $this->factory = $this->container->get('view');
         $this->compiler = $this->container->get('blade.compiler');
     }
+
+
+    static public function view(string $view, array $data = [], array $mergeData = [])
+    {
+        $instancia = new self(); 
+       return $instancia->make($view, $data, $mergeData);
+    }
+
 
     public function render(string $view, array $data = [], array $mergeData = []): string
     {
