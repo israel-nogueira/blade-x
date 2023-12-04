@@ -52,10 +52,21 @@ class bladex implements FactoryContract
         $CACHE      =   $cachePath?? realpath(__DIR__.'/../../../..').'/cache';
         $instancia  =   new self($VIEWS,$CACHE); 
 
-        if(defined('APP_NAME') && strpos('{project}',$view)!=-1){
-           $_project    = 'app.projetos.' . getEnv('APP_NAME');
-           $view        =  implode($_project, explode('{project}', $view));
-        }
+        /*
+        |--------------------------------------------------------------------
+        |	Aqui acrescentei apenas para funcionar em meu framework
+        |   pode comentar se quiser
+        |--------------------------------------------------------------------
+        */
+            if(defined('APP_NAME') && strpos('project',$view)==0){
+                $_PATHARRAY =	explode('.', $view);
+                if($_PATHARRAY[0]=='project'){
+                    $_PATHARRAY[0]='app.projetos.'.getEnv('APP_NAME');
+                    $view        =  implode('.', $_PATHARRAY);
+                }
+            }
+        //--- Fim ----------------------------------------------
+
         return $instancia->make($view, $data, $mergeData);
 
     }
