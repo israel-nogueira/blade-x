@@ -47,10 +47,17 @@ class bladex implements FactoryContract
 
 
     static public function view(string $view, array $data = [], array $mergeData = []){
-        $VIEWS = $viewPaths?? realpath(__DIR__.'/../../../..');
-        $CACHE = $cachePath?? realpath(__DIR__.'/../../../..').'/cache';
-        $instancia = new self($VIEWS,$CACHE); 
-       return $instancia->make($view, $data, $mergeData);
+
+        $VIEWS      =   $viewPaths?? realpath(__DIR__.'/../../../..');
+        $CACHE      =   $cachePath?? realpath(__DIR__.'/../../../..').'/cache';
+        $instancia  =   new self($VIEWS,$CACHE); 
+
+        if(defined('APP_NAME') && strpos('{project}',$view)!=-1){
+           $_project    = 'app.projetos.' . getEnv('APP_NAME');
+           $view        =  implode($_project, explode('{project}', $view));
+        }
+        return $instancia->make($view, $data, $mergeData);
+
     }
 
 
