@@ -58,12 +58,18 @@ class bladex implements FactoryContract
         |   pode comentar se quiser
         |--------------------------------------------------------------------
         */
-            if(defined('APP_NAME') && strpos('project',$view)==0){
+            if(defined('APP_NAME') && (strpos('project',$view)==0 || strpos('system',$view)==0)){
                 $_PATHARRAY =	explode('.', $view);
+
                 if($_PATHARRAY[0]=='project'){
                     $_PATHARRAY[0]='app.projetos.'.getEnv('APP_NAME');
-                    $view        =  implode('.', $_PATHARRAY);
                 }
+                
+                if($_PATHARRAY[0]=='system'){
+                    $_PATHARRAY[0]='app.system';
+                }
+
+                $view=implode('.', $_PATHARRAY);
             }
         //--- Fim ----------------------------------------------
 
