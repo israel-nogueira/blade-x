@@ -47,7 +47,7 @@ class bladex implements FactoryContract{
 		|   pode comentar se quiser
 		|--------------------------------------------------------------------
 		*/
-			  Blade::directive('include', function ($view) {
+			Blade::directive('include', function ($view) {
 				$view =   explode('.',$view);
 				if (!is_null(getEnv('APP_NAME'))) {
 					if ($view[0] == "'project") {
@@ -59,7 +59,7 @@ class bladex implements FactoryContract{
 					$view = implode('.', $view);
 				}
 				return '<?php echo $__env->make('.$view.', \Illuminate\Support\Arr::except(get_defined_vars(), [\'__data\', \'__path\']))->render(); ?>';
-			 });
+			});
 
 			Blade::directive('block', function ($expression) {
 
@@ -96,17 +96,16 @@ class bladex implements FactoryContract{
 				return $_return;
 			});
 
+			Blade::directive('langView', function ($expression) {
+				$_return ="<?php".PHP_EOL;
+				$_return.=" echo \system\lib\system::langView();".PHP_EOL;
+				$_return.="?>".PHP_EOL;
+				return $_return;
+			});
+
 		/*--------------------------------------------------------------*/
 		/*------------------------- FIM --------------------------------*/
 		/*--------------------------------------------------------------*/
-
-
-
-
-
-
-
-
 	}
 
 
