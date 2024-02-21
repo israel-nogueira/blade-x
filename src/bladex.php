@@ -14,7 +14,6 @@ use Illuminate\View\Compilers\BladeCompiler;
 use Illuminate\View\Factory;
 use Illuminate\View\ViewServiceProvider;
 use Illuminate\Support\Facades\Blade;
-
 class bladex implements FactoryContract{
 	/**
 	 * @var Application
@@ -41,27 +40,20 @@ class bladex implements FactoryContract{
 		$this->factory = $this->container->get('view');
 		$this->compiler = $this->container->get('blade.compiler');
 
+
+		
 		/*
 		|--------------------------------------------------------------------
 		|	Aqui acrescentei apenas para funcionar em meu framework
 		|   pode comentar se quiser
 		|--------------------------------------------------------------------
 		*/
-			Blade::directive('include', function ($view) {
-				$view =   explode('.',$view);
-				if (!is_null(getEnv('APP_NAME'))) {
-					if ($view[0] == "'project") {
-						$view[0] = "'app.projetos.".getEnv('APP_NAME');
-					}
-					if ($view[0] == "'system") {
-						$view[0] = "'app.system";
-					}
-					$view = implode('.', $view);
-				}
-				return '<?php echo $__env->make('.$view.', \Illuminate\Support\Arr::except(get_defined_vars(), [\'__data\', \'__path\']))->render(); ?>';
+			$this->directive('include', function ($view) {
+				$view = bladex::processView($view);
+				return '<?php echo $__env->make("'.$view.'", \Illuminate\Support\Arr::except(get_defined_vars(), [\'__data\', \'__path\']))->render(); ?'.'>';
 			});
 
-			Blade::directive('block', function ($expression) {
+			$this->directive('block', function ($expression) {
 
 				$view =   explode('.',trim(trim($expression,'"'),"'"));
 				if ($view[0] == "project") {
@@ -89,14 +81,14 @@ class bladex implements FactoryContract{
 				return $_return;
 			});
 
-			Blade::directive('csrfToken', function ($expression) {
+			$this->directive('csrfToken', function ($expression) {
 				$_return ="<?php".PHP_EOL;
 				$_return.="	echo	system\lib\system::windowCsrf_token($expression);".PHP_EOL;
 				$_return.="?>".PHP_EOL;
 				return $_return;
 			});
-
-			Blade::directive('langView', function ($expression) {
+			
+			$this->directive('langView', function ($expression) {
 				$_return ="<?php".PHP_EOL;
 				$_return.=" echo \system\lib\system::langView();".PHP_EOL;
 				$_return.="?>".PHP_EOL;
@@ -108,20 +100,14 @@ class bladex implements FactoryContract{
 		/*--------------------------------------------------------------*/
 	}
 
-
-	static public function view(string $view, array $data = [], array $mergeData = []){
-
-		$VIEWS      =   $viewPaths?? realpath(__DIR__.'/../../../..');
-		$CACHE      =   $cachePath?? realpath(__DIR__.'/../../../..').'/cache';
-		$instancia  =   new self($VIEWS,$CACHE); 
-
+	static public function processView(string $view){
 		/*
 		|--------------------------------------------------------------------
 		|	Aqui acrescentei apenas para funcionar em meu framework
 		|   pode comentar se quiser
 		|--------------------------------------------------------------------
 		*/
-			$_PATHARRAY =	explode('.', $view);
+			$_PATHARRAY =	explode('.', trim($view,"'"));
 			if(!is_null(getEnv('APP_NAME'))){
 				if($_PATHARRAY[0]=='project'){
 					$_PATHARRAY[0]='app.projetos.'.getEnv('APP_NAME');
@@ -131,16 +117,24 @@ class bladex implements FactoryContract{
 				}
 				$view=implode('.', $_PATHARRAY);
 			}
-		//--- Fim ----------------------------------------------
+			return $view;
+	}
 
+
+	static public function view(string $view, array $data = [], array $mergeData = []){
+
+		$VIEWS      =   $viewPaths?? realpath(__DIR__.'/../../../..');
+		$CACHE      =   $cachePath?? realpath(__DIR__.'/../../../..').'/cache';
+		$instancia  =   new self($VIEWS,$CACHE); 
+		$view		= bladex::processView($view);
 		return $instancia->make($view, $data, $mergeData);
 
 	}
 
 
-	public function render(string $view, array $data = [], array $mergeData = []): string
+	static public function render(string $view, array $data = [], array $mergeData = []): string
 	{
-		return $this->make($view, $data, $mergeData)->render();
+		return bladex::view($view, $data, $mergeData)->render();
 	}
 
 	public function make($view, $data = [], $mergeData = []): View
