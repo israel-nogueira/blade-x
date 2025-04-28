@@ -48,19 +48,32 @@ class bladex implements FactoryContract{
 		|   pode comentar se quiser
 		|--------------------------------------------------------------------
 		*/
+
 			$this->directive('include', function ($view) {
 				$view = bladex::processView($view);
-				return '<?php echo $__env->make("'.$view.'", \Illuminate\Support\Arr::except(get_defined_vars(), [\'__data\', \'__path\']))->render(); ?'.'>';
+				$fn = '<?php echo $__env->make(\'' . $view . '\', \Illuminate\Support\Arr::except(get_defined_vars(), [\'__data\', \'__path\']))->render(); ?>';
+				return 	$fn;
 			});
+
+			
+			$this->directive('translate', function ($expression) {
+				$fn = "<?php echo \\system\\lib\\system::translate({$expression}); ?>";
+				return $fn;
+
+			});
+
+
 
 			$this->directive('block', function ($expression) {
 
 				$view =   explode('.',trim(trim($expression,'"'),"'"));
-				if ($view[0] == "project") {
-					$view[0] = "app.projetos.".getEnv('APP_NAME');
-				}
-				if ($view[0] == "system") {
-					$view[0] = "app.system";
+				if($view[0]=="project"|| $view[0]=="system"){
+					if($view[0]=='project'){
+						$view[0]='app.fw-projects';
+					}
+					if($view[0]=='system'){
+						$view[0]='app.system';
+					}
 				}
 
 				$section = end($view)??0;
@@ -71,7 +84,7 @@ class bladex implements FactoryContract{
 				$_return.="<?php".PHP_EOL;
 				
 				if($hasPath>0  && $section!=0){		$_return.="	if (empty(trim(\$__env->yieldContent('$section')))){".PHP_EOL;}
-				if($hasPath>0  && $section!=0){		$_return.="		echo \$__env->make('".implode('.', $view)."', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render();".PHP_EOL;}
+				if($hasPath>0  && $section!=0){		$_return.="		echo \$__env->make('".(implode('.', $view))."', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render();".PHP_EOL;}
 				if($hasPath>0  && $section!=0){		$_return.="	}".PHP_EOL.PHP_EOL;}
 
 				$_return.="	if (!empty(trim(\$__env->yieldContent('$section')))){".PHP_EOL;
@@ -100,45 +113,40 @@ class bladex implements FactoryContract{
 		/*--------------------------------------------------------------*/
 	}
 
-	static public function processView(string $view){
-		/*
-		|--------------------------------------------------------------------
-		|	Aqui acrescentei apenas para funcionar em meu framework
-		|   pode comentar se quiser
-		|--------------------------------------------------------------------
-		*/
-			$_PATHARRAY =	explode('.', trim($view,"'"));
-			if(!is_null(getEnv('APP_NAME'))){
-				if($_PATHARRAY[0]=='project'){
-					$_PATHARRAY[0]='app.projetos.'.getEnv('APP_NAME');
-				}
-				if($_PATHARRAY[0]=='system'){
-					$_PATHARRAY[0]='app.system';
-				}
-				$view=implode('.', $_PATHARRAY);
+	static public function processView(string $view) {
+
+		$view 		= trim($view, "'");
+		$view 		= trim($view, '"');
+		$_PATHARRAY = explode('.',$view);
+		if ($_PATHARRAY[0] == 'project' || $_PATHARRAY[0] == 'system') {
+			if ($_PATHARRAY[0] == 'project') {
+				$_PATHARRAY[0] = 'app.fw-projects';
 			}
-			return $view;
+			if ($_PATHARRAY[0] == 'system') {
+				$_PATHARRAY[0] = 'app.system';
+			}
+			$view = implode('.', $_PATHARRAY);
+		}
+		return $view;  // Retorne a string sem manipulação extra de aspas
 	}
 
 
-	static public function view(string $view, array $data = [], array $mergeData = []){
 
+	static public function view(string $view, array $data = [], array $mergeData = []){
 		$VIEWS      =   $viewPaths?? realpath(__DIR__.'/../../../..');
 		$CACHE      =   $cachePath?? realpath(__DIR__.'/../../../..').'/cache';
 		$instancia  =   new self($VIEWS,$CACHE); 
-		$view		= bladex::processView($view);
+		$view		=	bladex::processView($view);
 		return $instancia->make($view, $data, $mergeData);
 
 	}
 
 
-	static public function render(string $view, array $data = [], array $mergeData = []): string
-	{
+	static public function render(string $view, array $data = [], array $mergeData = []): string{
 		return bladex::view($view, $data, $mergeData)->render();
 	}
 
-	public function make($view, $data = [], $mergeData = []): View
-	{
+	public function make($view, $data = [], $mergeData = []): View{
 		return $this->factory->make($view, $data, $mergeData);
 	}
 
